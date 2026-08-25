@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Review Deck — Database Essay Prep</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #f6faf9;
+    --white: #ffffff;
+    --blue: #1467d6;
+    --blue-dark: #0d4ea3;
+    --blue-soft: #e8f1fd;
+    --green: #16a673;
+    --green-dark: #0e8a5f;
+    --green-soft: #e6f7f0;
+    --text: #10201c;
+    --muted: #6b7f7a;
+    --line: #e2ece9;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{height:100%; margin:0;}
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Manrope', sans-serif;
+    display:flex;
+    justify-content:center;
+    min-height:100dvh;
+  }
+
+  .app{
+    width:100%;
+    max-width: 480px;
+    min-height:100dvh;
+    background: var(--white);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    box-shadow: 0 0 0 1px var(--line);
+  }
+  @media (min-width: 481px){
+    body{ padding: 28px 12px; }
+    .app{ min-height: auto; border-radius: 22px; box-shadow: 0 24px 60px -30px rgba(16,32,28,0.35), 0 0 0 1px var(--line); overflow:hidden; }
+  }
+
+  header{
+    padding: 18px 20px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom: 1px solid var(--line);
+  }
+  .brand{
+    font-weight:800;
+    font-size: 17px;
+    letter-spacing:-0.01em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .brand .dot{
+    width:9px; height:9px; border-radius:3px;
+    background: linear-gradient(135deg, var(--blue), var(--green));
+  }
+  .counter{
+    font-size: 12.5px;
+    font-weight:600;
+    color: var(--muted);
+    background: var(--bg);
+    border-radius: 20px;
+    padding: 4px 10px;
+  }
+
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    padding: 18px 20px 0;
+  }
+
+  .tabs{
+    display:flex;
+    gap:6px;
+    margin-bottom: 16px;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    font-size: 10.5px;
+    font-weight:700;
+    letter-spacing:0.02em;
+    color: var(--muted);
+    padding: 8px 2px;
+    border-radius: 9px;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    transition: all .2s ease;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .tab.active{
+    color: var(--white);
+    background: var(--blue);
+    border-color: var(--blue);
+  }
+  .tab.active.green{ background: var(--green); border-color: var(--green); }
+
+  .id-tag{
+    font-size: 12px;
+    font-weight:600;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+
+  .label-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 10px;
+  }
+  .label{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size: 12px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing: 0.04em;
+    color: var(--blue);
+  }
+  .label.answer{ color: var(--green-dark); }
+  .label::before{
+    content:"";
+    width:6px; height:6px; border-radius:50%;
+    background: currentColor;
+  }
+  .tap-hint{
+    font-size: 10.5px;
+    font-weight:600;
+    color: var(--blue);
+    background: var(--blue-soft);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  .card{
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 20px 18px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width: 0;
+    min-height: 180px;
+    box-shadow: 0 2px 10px -6px rgba(16,32,28,0.08);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .content{
+    width: 100%;
+    min-width: 0;
+    margin: auto 0;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.65;
+    letter-spacing: -0.005em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: normal;
+  }
+  .content.answer-text{
+    font-size: 15.5px;
+    font-weight: 500;
+    color: #2c3e38;
+  }
+  .content.rtl{
+    direction: rtl;
+    text-align: right;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+  }
+
+  .word{
+    cursor:pointer;
+    border-radius: 4px;
+    padding: 1px 2px;
+    transition: background .15s ease;
+  }
+  .word:hover, .word.tapped{
+    background: var(--green-soft);
+  }
+
+  .word-popup{
+    position:absolute;
+    left:50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: var(--white);
+    font-family:'IBM Plex Sans Arabic', 'Manrope', sans-serif;
+    font-size: 14px;
+    font-weight:600;
+    padding: 9px 16px;
+    border-radius: 12px;
+    box-shadow: 0 12px 26px -10px rgba(16,32,28,0.5);
+    display:flex;
+    align-items:baseline;
+    gap: 8px;
+    max-width: 90%;
+    z-index: 5;
+    animation: popIn .18s ease;
+  }
+  .word-popup .en{
+    font-family:'Manrope', sans-serif;
+    color: #9fb3ad;
+    font-size: 11.5px;
+    font-weight:700;
+    text-transform:uppercase;
+  }
+  .word-popup .ar{ direction: rtl; }
+  @keyframes popIn{ from{opacity:0; transform: translateX(-50%) translateY(6px);} to{opacity:1; transform: translateX(-50%) translateY(0);} }
+
+  .fade-in{ animation: fadeIn .35s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
+
+  .progress-track{
+    height: 4px;
+    background: var(--line);
+    border-radius: 4px;
+    margin-top: 16px;
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    transition: width .3s ease;
+  }
+
+  footer.actions{
+    padding: 14px 20px calc(18px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    background: var(--white);
+    position: sticky;
+    bottom: 0;
+  }
+  .hint{
+    display:block;
+    text-align:center;
+    font-size: 12.5px;
+    color: var(--muted);
+    font-weight:500;
+    margin-bottom: 10px;
+  }
+  .btn-row{
+    display:flex;
+    gap: 10px;
+  }
+  button.next, button.back{
+    font-family:'Manrope', sans-serif;
+    font-weight:800;
+    font-size: 16px;
+    border: none;
+    border-radius: 13px;
+    padding: 15px;
+    cursor:pointer;
+    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  }
+  button.next{
+    flex: 1;
+    color: var(--white);
+    background: linear-gradient(90deg, var(--blue), var(--green));
+    box-shadow: 0 10px 24px -10px rgba(20,103,214,0.45);
+  }
+  button.back{
+    flex: 0 0 74px;
+    color: var(--blue-dark);
+    background: var(--blue-soft);
+  }
+  button.back:disabled{
+    color: var(--muted);
+    background: var(--bg);
+    cursor:not-allowed;
+    opacity: 0.6;
+  }
+  button.next:active, button.back:active{ transform: scale(0.97); opacity:0.92; }
+  button.next:focus-visible, button.back:focus-visible{ outline: 2px solid var(--blue-dark); outline-offset: 3px; }
+
+  .done-screen{
+    text-align:center;
+    padding: 30px 6px;
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+  .done-screen .emoji{ font-size: 40px; margin-bottom: 10px; }
+  .done-screen .big{
+    font-size: 21px;
+    font-weight:800;
+    margin-bottom: 8px;
+  }
+  .done-screen p{ color: var(--muted); margin: 0 0 22px; font-size:13.5px; line-height:1.5; }
+  button.restart{
+    font-family:'Manrope', sans-serif;
+    font-weight:700;
+    font-size: 14px;
+    color: var(--blue-dark);
+    background: var(--blue-soft);
+    border: none;
+    border-radius: 12px;
+    padding: 13px 22px;
+    cursor:pointer;
+  }
+  button.restart:active{ opacity: 0.85; }
+
+  .footnote{
+    text-align:center;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 10px 20px 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="brand"><span class="dot"></span>Review Deck</div>
+    <div class="counter" id="counter">01 / 13</div>
+  </header>
+
+  <main>
+    <div id="cardBody" style="display:flex; flex-direction:column; flex:1;"></div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="footnote">shuffled fresh every visit · Innovation University — Databases</div>
+  </main>
+
+  <footer class="actions" id="controls">
+    <span class="hint" id="hint">read it — then try to answer before you move on</span>
+    <div class="btn-row">
+      <button class="back" id="backBtn">← Back</button>
+      <button class="next" id="nextBtn">Next →</button>
+    </div>
+  </footer>
+</div>
+
+<script>
+const questions = [
+  {
+    q_en: "Define the purpose of a JOIN operation in relational databases.",
+    q_ar: "عرّف الغرض من عملية الـ JOIN في قواعد البيانات العلائقية.",
+    a_en: "Combines rows from two or more tables using a related column, to retrieve connected data across tables.",
+    a_ar: "تدمج صفوف من جدولين أو أكثر عبر عمود مشترك، لاسترجاع البيانات المرتبطة بينها."
+  },
+  {
+    q_en: "Define the difference between INNER JOIN and OUTER JOIN.",
+    q_ar: "وضّح الفرق بين INNER JOIN و OUTER JOIN.",
+    a_en: "INNER JOIN: only matching rows in both tables. OUTER JOIN: matching rows plus unmatched rows from one or both tables.",
+    a_ar: "INNER JOIN: الصفوف المتطابقة فقط. OUTER JOIN: المتطابقة + غير المتطابقة من جدول أو أكثر."
+  },
+  {
+    q_en: "Determine different types of JOINs in SQL.",
+    q_ar: "حدّد الأنواع المختلفة لعمليات الـ JOIN في SQL.",
+    a_en: "INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN.",
+    a_ar: "INNER JOIN، LEFT JOIN، RIGHT JOIN، FULL OUTER JOIN."
+  },
+  {
+    q_en: "What is a VIEW in SQL? Explain its main objectives.",
+    q_ar: "ما هو الـ VIEW في SQL؟ اشرح أهدافه الرئيسية.",
+    a_en: "A virtual table built from a query result — stores no data itself, just displays it live each time it's queried.",
+    a_ar: "جدول افتراضي ناتج عن استعلام — لا يخزّن بيانات، بل يعرضها في كل مرة يُستعلَم فيها عنه."
+  },
+  {
+    q_en: "Compare between ER and EER.",
+    q_ar: "قارن بين ER و EER.",
+    a_en: "ERD: entities, attributes, relationships — basic design. EER: adds specialization, generalization, inheritance, and categories — for complex databases.",
+    a_ar: "ERD: كيانات وسمات وعلاقات — تصميم أساسي. EER: يضيف التخصيص والتعميم والوراثة والفئات — لقواعد بيانات معقدة."
+  },
+  {
+    q_en: "What does 2NF eliminate? A) Transitive dependency B) Multi-valued dependency C) Partial dependency D) Join dependency",
+    q_ar: "ماذا تُزيل الصيغة الطبيعية الثانية (2NF)؟ A) الاعتمادية الانتقالية B) الاعتمادية متعددة القيم C) الاعتمادية الجزئية D) اعتمادية الـ Join",
+    a_en: "C) Partial dependency",
+    a_ar: "C) الاعتمادية الجزئية (Partial dependency)"
+  },
+  {
+    q_en: "Why is it useful to first do an ER design and then convert this into a relational schema?",
+    q_ar: "لماذا من المفيد عمل تصميم ER أولاً ثم تحويله إلى مخطط علائقي (relational schema)؟",
+    a_en: "ERD gives a clear conceptual view before implementation — it identifies entities, relationships, and constraints, improving accuracy and catching errors before converting to relational tables.",
+    a_ar: "ERD يعطي رؤية مفاهيمية واضحة قبل التنفيذ — يحدد الكيانات والعلاقات والقيود، ويقلل الأخطاء قبل تحويله إلى جداول علائقية."
+  },
+  {
+    q_en: "Explain some of the main goals of normalization.",
+    q_ar: "اشرح بعض الأهداف الرئيسية للتطبيع (Normalization).",
+    a_en: "Breaks 'bad' relations into smaller ones based on FDs and keys, to minimize redundancy and insertion/deletion/update anomalies.",
+    a_ar: "تقسيم العلاقات السيئة إلى علاقات أصغر بناءً على FDs والمفاتيح، لتقليل التكرار ومشاكل الإدراج والحذف والتحديث."
+  },
+  {
+    q_en: "State the differences between SQL and other conventional programming languages such as C#.",
+    q_ar: "اذكر الفروق بين SQL ولغات البرمجة التقليدية الأخرى مثل #C.",
+    a_en: "SQL: query language to manage and retrieve data. C#: general-purpose language to build applications.",
+    a_ar: "SQL: لغة استعلام لإدارة واسترجاع البيانات. #C: لغة برمجة عامة لبناء التطبيقات."
+  },
+  {
+    q_en: "Explain what is Nesting of Queries?",
+    q_ar: "اشرح ما المقصود بتداخل الاستعلامات (Nesting of Queries)؟",
+    a_en: "A query inside another query (subquery). The inner query runs first, and its result feeds the outer query — e.g. finding employees earning above the average salary.",
+    a_ar: "استعلام داخل استعلام آخر (subquery). الداخلي يُنفَّذ أولاً وتُستخدم نتيجته في الخارجي — مثال: موظفون براتب أعلى من المتوسط."
+  },
+  {
+    q_en: "What are the advantages of views?",
+    q_ar: "ما هي مزايا الـ Views؟",
+    a_en: "Reduce schema complexity, secure data at row/column level, and show aggregated data while hiding details. Modify: ALTER VIEW. Delete: DROP VIEW.",
+    a_ar: "تقلل تعقيد المخطط، تؤمّن البيانات على مستوى الصف والعمود، وتعرض بيانات مجمّعة مع إخفاء التفاصيل. تعديل: ALTER VIEW. حذف: DROP VIEW."
+  },
+  {
+    q_en: "What is DCL (Data Control Language) in SQL? Determine the main types of DCL.",
+    q_ar: "ما هي لغة التحكم بالبيانات (DCL) في SQL؟ حدّد الأنواع الرئيسية لها.",
+    a_en: "Manages permissions on database objects. GRANT: gives access. REVOKE: removes access. DENY: blocks a specific action.",
+    a_ar: "تدير صلاحيات كائنات قاعدة البيانات. GRANT: منح. REVOKE: سحب. DENY: منع إجراء محدد."
+  },
+  {
+    q_en: "What is the main function of the UNION operator in SQL?",
+    q_ar: "ما هي الوظيفة الرئيسية لعامل UNION في SQL؟",
+    a_en: "Combines results of two or more SELECT statements into one set, removing duplicates automatically. Needs the same column count and compatible types.",
+    a_ar: "يدمج نتائج استعلامين SELECT أو أكثر في نتيجة واحدة، ويزيل التكرار تلقائيًا. يتطلب نفس عدد الأعمدة وأنواع متوافقة."
+  }
+];
+
+// word-by-word glossary for English stages (lowercase, punctuation-stripped keys)
+const GLOSSARY = {
+  "a":"أداة تعريف نكرة","an":"أداة تعريف نكرة","the":"أداة تعريف معرفة","of":"مِن","in":"في","on":"على","to":"إلى",
+  "is":"هو/تكون","are":"تكون (جمع)","and":"و","or":"أو","between":"بين","from":"من","for":"لـ / من أجل",
+  "it":"هو (ضمير)","its":"الخاص به","they":"هم","them":"هم/إياهم","this":"هذا/هذه","that":"ذلك/التي",
+  "with":"مع","by":"بواسطة","as":"كـ / مثل","such":"مثل","into":"إلى داخل","than":"مِن (للمقارنة)",
+  "one":"واحد","two":"اثنان","more":"أكثر","or more":"أو أكثر","only":"فقط","all":"جميع","both":"كلاهما",
+  "each":"كل","other":"آخر/أخرى","another":"آخر","different":"مختلف","various":"متنوعة",
+  "based":"مبني","use":"استخدام","used":"يُستخدم","using":"باستخدام","useful":"مفيد",
+  "define":"عرّف / حدد","defining":"تعريف","explain":"اشرح","explicitly":"صراحةً",
+  "purpose":"الغرض","operation":"عملية","operator":"عامل / مُشغِّل",
+  "combine":"دمج","combines":"يدمج","merge":"دمج / يدمج",
+  "row":"صف","rows":"صفوف","column":"عمود","columns":"أعمدة",
+  "table":"جدول","tables":"جداول","view":"عرض / فيو (View)","views":"عروض (Views)",
+  "database":"قاعدة بيانات","databases":"قواعد بيانات","schema":"مخطط قاعدة البيانات","schemas":"مخططات",
+  "data":"بيانات","record":"سجل","records":"سجلات","result":"نتيجة","results":"نتائج",
+  "query":"استعلام","queries":"استعلامات","queried":"تم الاستعلام عنه","nesting":"تداخل","subquery":"استعلام فرعي",
+  "retrieve":"استرجاع","retrieved":"مسترجَع","return":"إرجاع","returns":"يُرجع",
+  "match":"تطابق","matching":"متطابق","non-matching":"غير متطابق",
+  "related":"مرتبط","relation":"علاقة","relations":"علاقات","relationship":"علاقة","relationships":"علاقات","relational":"علائقي",
+  "type":"نوع","types":"أنواع","difference":"فرق","differences":"فروق","compare":"قارن","determine":"حدّد","state":"اذكر",
+  "inner":"داخلي","outer":"خارجي","left":"يسار","right":"يمين","full":"كامل",
+  "entity":"كيان","entities":"كيانات","attribute":"سمة","attributes":"سمات",
+  "model":"نموذج","design":"تصميم","simpler":"أبسط","basic":"أساسي","advanced":"متقدم",
+  "additional":"إضافي","concepts":"مفاهيم","complex":"معقد","components":"مكونات",
+  "specialization":"التخصيص","generalization":"التعميم","inheritance":"الوراثة","categories":"فئات",
+  "create":"إنشاء","created":"تم إنشاؤه","convert":"تحويل","converted":"تم تحويله",
+  "provides":"يوفر","clear":"واضح","conceptual":"مفاهيمي","view (noun)":"رؤية",
+  "before":"قبل","after":"بعد","implementation":"تنفيذ","identify":"تحديد","constraints":"قيود",
+  "organized":"منظم","way":"طريقة","improving":"تحسين","accuracy":"دقة","reducing":"تقليل",
+  "redundancy":"تكرار زائد","helping":"يساعد","detect":"اكتشاف","errors":"أخطاء","early":"مبكرًا",
+  "systematically":"بشكل منهجي","making":"يجعل","easier":"أسهل","efficient":"فعّال / كفء",
+  "does":"يفعل / يقوم بـ","eliminate":"يزيل / يستبعد","eliminates":"يزيل",
+  "transitive":"انتقالية","dependency":"اعتمادية","multi-valued":"متعددة القيم","partial":"جزئية","join dependency":"اعتمادية الربط",
+  "normalization":"التطبيع","process":"عملية","decomposing":"تفكيك","unsatisfactory":"غير مُرضٍ","bad":"سيئ",
+  "breaking":"تقسيم / كسر","smaller":"أصغر","analyzing":"تحليل","given":"مُعطى","primary":"أساسي / رئيسي",
+  "keys":"مفاتيح","key":"مفتاح","minimize":"تقليل","insertion":"إدراج","deletion":"حذف","update":"تحديث","anomalies":"شذوذ / مشكلات",
+  "goals":"أهداف","main":"رئيسي","objectives":"أهداف","virtual":"افتراضي","permanently":"بشكل دائم",
+  "normal":"عادي","instead":"بدلاً من ذلك","displays":"يعرض","whenever":"كلما / في كل مرة",
+  "language":"لغة","languages":"لغات","conventional":"تقليدية","programming":"برمجة","general":"عام","purpose (adj)":"الغرض",
+  "develop":"تطوير","software":"برمجيات","applications":"تطبيقات","manage":"إدارة","manages":"يدير",
+  "also":"أيضًا","called":"يُسمى","placing":"وضع","inside":"داخل","executes":"يُنفَّذ","first (adv)":"أولاً",
+  "commonly":"عادةً","conditions":"شروط","example":"مثال","finding":"إيجاد","employees":"موظفون",
+  "earn":"يكسب / يتقاضى","salary":"راتب","higher":"أعلى","average":"متوسط","company":"شركة",
+  "advantages":"مزايا","reduce":"تقليل","complexity":"تعقيد","act":"يعمل","mechanism":"آلية",
+  "level":"مستوى","security":"أمان","present":"يعرض / يقدم","aggregated":"مجمّعة","while":"بينما","hiding":"إخفاء","detailed":"تفصيلية",
+  "modify":"تعديل","drop":"حذف","alter":"تعديل","permissions":"صلاحيات","user":"مستخدم","users":"مستخدمون",
+  "granting":"منح","removing":"إزالة","privileges":"امتيازات","objects":"كائنات","grant":"منح","revoke":"سحب / إزالة","deny":"رفض / منع",
+  "prevents":"يمنع","performing":"تنفيذ","specific":"محدد","actions":"إجراءات",
+  "function":"وظيفة","union":"اتحاد","combines2":"يدمج","statements":"جمل / عبارات","single":"واحد / مفرد",
+  "automatically":"تلقائيًا","duplicate":"مكرر","number":"عدد","compatible":"متوافق","types2":"أنواع",
+  "exist":"موجود","depending":"اعتمادًا على","because":"لأن","stored":"مُخزَّن","store":"تخزين",
+  "not":"لا / ليس","like":"مثل","interpret":"يفسّر"
+};
+
+// stages: 0 = question EN, 1 = question AR, 2 = answer EN, 3 = answer AR
+const STAGE_META = [
+  { tab: "EN Q", label: "Question", rtl:false, isAnswer:false, green:false, tappable:true },
+  { tab: "AR Q", label: "الترجمة",  rtl:true,  isAnswer:false, green:false, tappable:false },
+  { tab: "EN A", label: "Answer",   rtl:false, isAnswer:true,  green:true,  tappable:true },
+  { tab: "AR A", label: "الإجابة",  rtl:true,  isAnswer:true,  green:true,  tappable:false }
+];
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function lookupWord(raw){
+  const clean = raw.toLowerCase().replace(/[.,;:!?()"'#]/g, '').trim();
+  if(!clean) return null;
+  if(GLOSSARY[clean]) return GLOSSARY[clean];
+  // try singular form (strip trailing s)
+  if(clean.endsWith('s') && GLOSSARY[clean.slice(0,-1)]) return GLOSSARY[clean.slice(0,-1)];
+  return "لا توجد ترجمة لهذه الكلمة بعد";
+}
+
+function tokenizeToHtml(text){
+  return text.split(/(\s+)/).map(chunk => {
+    if(/^\s+$/.test(chunk) || chunk === '') return chunk;
+    const safe = chunk.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return `<span class="word" data-word="${chunk.replace(/"/g,'&quot;')}">${safe}</span>`;
+  }).join('');
+}
+
+let order = shuffle(questions.map((_, i) => i));
+let qPos = 0;
+let stage = 0;
+
+const cardBody = document.getElementById('cardBody');
+const controls = document.getElementById('controls');
+const counter = document.getElementById('counter');
+const progressFill = document.getElementById('progressFill');
+const hint = document.getElementById('hint');
+const nextBtn = document.getElementById('nextBtn');
+const backBtn = document.getElementById('backBtn');
+
+function closePopup(){
+  const existing = document.querySelector('.word-popup');
+  if(existing) existing.remove();
+  document.querySelectorAll('.word.tapped').forEach(w => w.classList.remove('tapped'));
+}
+
+function render(){
+  if(qPos >= order.length){
+    renderDone();
+    return;
+  }
+
+  const qIndex = order[qPos];
+  const q = questions[qIndex];
+  const meta = STAGE_META[stage];
+
+  counter.textContent = `${String(qPos+1).padStart(2,'0')} / ${order.length}`;
+
+  const totalSteps = order.length * 4;
+  const doneSteps = qPos * 4 + stage;
+  progressFill.style.width = ((doneSteps / totalSteps) * 100) + '%';
+
+  let text;
+  if(stage === 0) text = q.q_en;
+  else if(stage === 1) text = q.q_ar;
+  else if(stage === 2) text = q.a_en;
+  else text = q.a_ar;
+
+  const tabsHtml = STAGE_META.map((m, i) => {
+    const active = i === stage ? 'active' + (m.green ? ' green' : '') : '';
+    return `<div class="tab ${active}">${m.tab}</div>`;
+  }).join('');
+
+  const contentHtml = meta.tappable ? tokenizeToHtml(text) : text;
+  const tapHintHtml = meta.tappable ? `<span class="tap-hint">اضغط على كلمة للترجمة</span>` : '';
+
+  cardBody.innerHTML = `
+    <div class="tabs">${tabsHtml}</div>
+    <div class="id-tag">Question ${qIndex+1} of 13</div>
+    <div class="label-row">
+      <div class="label ${meta.isAnswer ? 'answer':''}">${meta.label}</div>
+      ${tapHintHtml}
+    </div>
+    <div class="card">
+      <div class="content fade-in ${meta.rtl ? 'rtl' : ''} ${meta.isAnswer ? 'answer-text' : ''}" id="contentEl">${contentHtml}</div>
+    </div>
+  `;
+
+  const hints = [
+    "read it — then try to answer before you move on",
+    "شوف الترجمة كويس",
+    "check your answer against this",
+    "قارن إجابتك بالحل"
+  ];
+  hint.textContent = hints[stage];
+
+  const lastEverything = (qPos === order.length - 1 && stage === 3);
+  nextBtn.textContent = lastEverything ? "Finish ✓" : "Next →";
+
+  backBtn.disabled = (qPos === 0 && stage === 0);
+
+  if(meta.tappable){
+    const contentEl = document.getElementById('contentEl');
+    contentEl.querySelectorAll('.word').forEach(span => {
+      span.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const alreadyTapped = span.classList.contains('tapped');
+        closePopup();
+        if(alreadyTapped) return;
+        span.classList.add('tapped');
+        const translation = lookupWord(span.dataset.word);
+        const popup = document.createElement('div');
+        popup.className = 'word-popup';
+        popup.innerHTML = `<span class="en">${span.dataset.word.replace(/[.,;:!?()"'#]/g,'')}</span><span class="ar">${translation}</span>`;
+        document.querySelector('.card').appendChild(popup);
+      });
+    });
+  }
+}
+
+document.addEventListener('click', closePopup);
+
+function renderDone(){
+  progressFill.style.width = '100%';
+  counter.textContent = `13 / 13`;
+  cardBody.innerHTML = `
+    <div class="card">
+      <div class="done-screen fade-in">
+        <div class="emoji">✅</div>
+        <div class="big">All 13 questions reviewed</div>
+        <p>Run it again and the order shuffles fresh — good for testing recall, not memorizing order.</p>
+        <button class="restart" id="restartBtn">↻ Restart, new shuffle</button>
+      </div>
+    </div>
+  `;
+  controls.style.display = 'none';
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    order = shuffle(questions.map((_, i) => i));
+    qPos = 0;
+    stage = 0;
+    controls.style.display = 'block';
+    render();
+  });
+}
+
+nextBtn.addEventListener('click', () => {
+  closePopup();
+  stage++;
+  if(stage > 3){
+    stage = 0;
+    qPos++;
+  }
+  render();
+});
+
+backBtn.addEventListener('click', () => {
+  if(qPos === 0 && stage === 0) return;
+  closePopup();
+  stage--;
+  if(stage < 0){
+    stage = 3;
+    qPos--;
+  }
+  render();
+});
+
+render();
+</script>
+
+</body>
+</html>
