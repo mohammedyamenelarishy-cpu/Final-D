@@ -1,665 +1,618 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Review Deck — Database Essay Prep</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>اختبار قواعد البيانات — Views &amp; Joins</title>
 <style>
   :root{
-    --bg: #f6faf9;
-    --white: #ffffff;
-    --blue: #1467d6;
-    --blue-dark: #0d4ea3;
-    --blue-soft: #e8f1fd;
-    --green: #16a673;
-    --green-dark: #0e8a5f;
-    --green-soft: #e6f7f0;
-    --text: #10201c;
-    --muted: #6b7f7a;
-    --line: #e2ece9;
+    --bg-0:#081321;
+    --bg-1:#0d1f36;
+    --panel:#0f2745;
+    --panel-2:#122c50;
+    --line: rgba(245,185,66,0.18);
+    --gold:#f5b942;
+    --gold-dim: #c99530;
+    --teal:#6fe3c4;
+    --text:#e9eefb;
+    --muted:#8ea0c4;
+    --danger:#ef7d7d;
+    --mono: 'Consolas','SFMono-Regular','Menlo','Courier New', monospace;
+    --sans: 'Segoe UI', Tahoma, 'Cairo', Arial, sans-serif;
   }
-  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
-  html,body{height:100%; margin:0;}
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
   body{
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Manrope', sans-serif;
-    display:flex;
-    justify-content:center;
-    min-height:100dvh;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, rgba(245,185,66,0.08), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(111,227,196,0.07), transparent 55%),
+      linear-gradient(180deg, var(--bg-0), var(--bg-1));
+    color:var(--text);
+    font-family:var(--sans);
+    min-height:100vh;
+    padding:28px 16px 60px;
   }
+  .wrap{max-width:760px;margin:0 auto;}
 
-  .app{
-    width:100%;
-    max-width: 480px;
-    min-height:100dvh;
-    background: var(--white);
-    display:flex;
-    flex-direction:column;
-    position:relative;
-    box-shadow: 0 0 0 1px var(--line);
+  .titlebar{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:22px;
   }
-  @media (min-width: 481px){
-    body{ padding: 28px 12px; }
-    .app{ min-height: auto; border-radius: 22px; box-shadow: 0 24px 60px -30px rgba(16,32,28,0.35), 0 0 0 1px var(--line); overflow:hidden; }
+  .titlebar .chip{
+    width:44px;height:44px;border-radius:10px;
+    background:linear-gradient(145deg, var(--panel-2), var(--panel));
+    border:1px solid var(--line);
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);color:var(--gold);font-weight:700;font-size:18px;
+    flex:0 0 auto;
   }
-
-  header{
-    padding: 18px 20px 14px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom: 1px solid var(--line);
-  }
-  .brand{
-    font-weight:800;
-    font-size: 17px;
-    letter-spacing:-0.01em;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .brand .dot{
-    width:9px; height:9px; border-radius:3px;
-    background: linear-gradient(135deg, var(--blue), var(--green));
-  }
-  .counter{
-    font-size: 12.5px;
-    font-weight:600;
-    color: var(--muted);
-    background: var(--bg);
-    border-radius: 20px;
-    padding: 4px 10px;
-  }
-
-  main{
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    padding: 18px 20px 0;
-  }
-
-  .tabs{
-    display:flex;
-    gap:6px;
-    margin-bottom: 16px;
-  }
-  .tab{
-    flex:1;
-    text-align:center;
-    font-size: 10.5px;
+  .titlebar h1{
+    font-size:19px;margin:0;line-height:1.4;
     font-weight:700;
-    letter-spacing:0.02em;
-    color: var(--muted);
-    padding: 8px 2px;
-    border-radius: 9px;
-    background: var(--bg);
-    border: 1px solid var(--line);
-    transition: all .2s ease;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
   }
-  .tab.active{
-    color: var(--white);
-    background: var(--blue);
-    border-color: var(--blue);
-  }
-  .tab.active.green{ background: var(--green); border-color: var(--green); }
+  .titlebar p{margin:2px 0 0;color:var(--muted);font-size:13px;}
 
-  .id-tag{
-    font-size: 12px;
-    font-weight:600;
-    color: var(--muted);
-    margin-bottom: 10px;
+  .progress-row{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:8px;font-size:13px;color:var(--muted);
+    font-family:var(--mono);
   }
-
-  .label-row{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom: 10px;
+  .progress-track{
+    height:6px;border-radius:6px;background:rgba(255,255,255,0.06);
+    overflow:hidden;margin-bottom:24px;border:1px solid var(--line);
   }
-  .label{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size: 12px;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing: 0.04em;
-    color: var(--blue);
-  }
-  .label.answer{ color: var(--green-dark); }
-  .label::before{
-    content:"";
-    width:6px; height:6px; border-radius:50%;
-    background: currentColor;
-  }
-  .tap-hint{
-    font-size: 10.5px;
-    font-weight:600;
-    color: var(--blue);
-    background: var(--blue-soft);
-    padding: 3px 9px;
-    border-radius: 20px;
+  .progress-fill{
+    height:100%;border-radius:6px;
+    background:linear-gradient(90deg, var(--gold-dim), var(--gold));
+    transition:width .35s ease;
   }
 
   .card{
-    background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 20px 18px;
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    min-width: 0;
-    min-height: 180px;
-    box-shadow: 0 2px 10px -6px rgba(16,32,28,0.08);
-    position: relative;
-    overflow: hidden;
+    background:linear-gradient(160deg, var(--panel), var(--panel-2));
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:26px 24px 22px;
+    box-shadow:0 20px 40px -20px rgba(0,0,0,0.6);
+    position:relative;
+    overflow:hidden;
   }
+  .card::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:3px;
+    background:linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity:.6;
+  }
+  .kicker{
+    font-family:var(--mono);font-size:12px;color:var(--teal);
+    letter-spacing:.06em;margin-bottom:10px;display:flex;align-items:center;gap:8px;
+  }
+  .kicker .dot{width:6px;height:6px;border-radius:50%;background:var(--teal);
+    box-shadow:0 0 8px var(--teal);}
 
-  .content{
-    width: 100%;
-    min-width: 0;
-    margin: auto 0;
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 1.65;
-    letter-spacing: -0.005em;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
+  .prompt-label{
+    font-family:var(--mono);color:var(--gold);font-size:13px;margin-bottom:6px;
+    letter-spacing:.04em;
   }
-  .content.answer-text{
-    font-size: 15.5px;
-    font-weight: 500;
-    color: #2c3e38;
+  .content-block{
+    direction:ltr;text-align:left;
+    font-family:var(--mono);
+    font-size:15.5px;
+    line-height:1.85;
+    color:var(--text);
+    white-space:normal;
+    background:rgba(0,0,0,0.18);
+    border:1px solid rgba(255,255,255,0.06);
+    border-radius:10px;
+    padding:16px 18px;
+    margin-bottom:6px;
   }
-  .content.rtl{
-    direction: rtl;
-    text-align: right;
-    font-family: 'IBM Plex Sans Arabic', sans-serif;
+  .content-block.answer{
+    border-color: rgba(111,227,196,0.28);
+    background: rgba(111,227,196,0.05);
   }
 
   .word{
     cursor:pointer;
-    border-radius: 4px;
-    padding: 1px 2px;
-    transition: background .15s ease;
+    border-bottom:1.5px dotted rgba(245,185,66,0.55);
+    border-radius:2px;
+    transition:background .15s ease, color .15s ease;
+    padding:0 1px;
   }
-  .word:hover, .word.tapped{
-    background: var(--green-soft);
+  .word:hover{background:rgba(245,185,66,0.14);}
+  .word.active{background:rgba(245,185,66,0.28);color:#fff;border-bottom-color:var(--gold);}
+  .answer .word{border-bottom-color:rgba(111,227,196,0.55);}
+  .answer .word:hover{background:rgba(111,227,196,0.16);}
+  .answer .word.active{background:rgba(111,227,196,0.3);border-bottom-color:var(--teal);}
+
+  .answer-wrap{
+    max-height:0;opacity:0;overflow:hidden;
+    transition:max-height .4s ease, opacity .3s ease, margin .3s ease;
+    margin-top:0;
+  }
+  .answer-wrap.show{
+    max-height:600px;opacity:1;margin-top:16px;
+  }
+  .answer-tag{
+    display:inline-flex;align-items:center;gap:6px;
+    font-family:var(--mono);font-size:12px;color:var(--teal);
+    margin-bottom:8px;letter-spacing:.05em;
   }
 
-  .word-popup{
-    position:absolute;
-    left:50%;
-    bottom: 10px;
-    transform: translateX(-50%);
-    background: var(--text);
-    color: var(--white);
-    font-family:'IBM Plex Sans Arabic', 'Manrope', sans-serif;
-    font-size: 14px;
-    font-weight:600;
-    padding: 9px 16px;
-    border-radius: 12px;
-    box-shadow: 0 12px 26px -10px rgba(16,32,28,0.5);
-    display:flex;
-    align-items:baseline;
-    gap: 8px;
-    max-width: 90%;
-    z-index: 5;
-    animation: popIn .18s ease;
+  .controls{
+    display:flex;align-items:center;justify-content:space-between;
+    margin-top:22px;gap:10px;
   }
-  .word-popup .en{
-    font-family:'Manrope', sans-serif;
-    color: #9fb3ad;
-    font-size: 11.5px;
-    font-weight:700;
-    text-transform:uppercase;
+  .btn{
+    font-family:var(--sans);font-weight:600;font-size:14.5px;
+    border-radius:10px;border:1px solid transparent;
+    padding:12px 20px;cursor:pointer;transition:transform .12s ease, filter .15s ease;
   }
-  .word-popup .ar{ direction: rtl; }
-  @keyframes popIn{ from{opacity:0; transform: translateX(-50%) translateY(6px);} to{opacity:1; transform: translateX(-50%) translateY(0);} }
+  .btn:active{transform:scale(0.97);}
+  .btn-primary{
+    background:linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color:#1a1300;flex:1;
+  }
+  .btn-primary:hover{filter:brightness(1.07);}
+  .btn-ghost{
+    background:transparent;border-color:rgba(255,255,255,0.14);
+    color:var(--muted);
+  }
+  .btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,0.3);}
+  .btn-ghost:disabled{opacity:.35;cursor:not-allowed;}
 
-  .fade-in{ animation: fadeIn .35s ease; }
-  @keyframes fadeIn{ from{opacity:0; transform: translateY(6px);} to{opacity:1; transform:none;} }
-
-  .progress-track{
-    height: 4px;
-    background: var(--line);
-    border-radius: 4px;
-    margin-top: 16px;
-    overflow:hidden;
-  }
-  .progress-fill{
-    height:100%;
-    background: linear-gradient(90deg, var(--blue), var(--green));
-    transition: width .3s ease;
-  }
-
-  footer.actions{
-    padding: 14px 20px calc(18px + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--line);
-    background: var(--white);
-    position: sticky;
-    bottom: 0;
-  }
   .hint{
-    display:block;
-    text-align:center;
-    font-size: 12.5px;
-    color: var(--muted);
-    font-weight:500;
-    margin-bottom: 10px;
+    text-align:center;color:var(--muted);font-size:12.5px;margin-top:16px;
+    font-family:var(--sans);
   }
-  .btn-row{
-    display:flex;
-    gap: 10px;
-  }
-  button.next, button.back{
-    font-family:'Manrope', sans-serif;
-    font-weight:800;
-    font-size: 16px;
-    border: none;
-    border-radius: 13px;
-    padding: 15px;
-    cursor:pointer;
-    transition: transform .12s ease, box-shadow .12s ease, opacity .12s ease;
-  }
-  button.next{
-    flex: 1;
-    color: var(--white);
-    background: linear-gradient(90deg, var(--blue), var(--green));
-    box-shadow: 0 10px 24px -10px rgba(20,103,214,0.45);
-  }
-  button.back{
-    flex: 0 0 74px;
-    color: var(--blue-dark);
-    background: var(--blue-soft);
-  }
-  button.back:disabled{
-    color: var(--muted);
-    background: var(--bg);
-    cursor:not-allowed;
-    opacity: 0.6;
-  }
-  button.next:active, button.back:active{ transform: scale(0.97); opacity:0.92; }
-  button.next:focus-visible, button.back:focus-visible{ outline: 2px solid var(--blue-dark); outline-offset: 3px; }
 
-  .done-screen{
-    text-align:center;
-    padding: 30px 6px;
-    flex:1;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+  /* tooltip */
+  #tooltip{
+    position:fixed;z-index:50;
+    background:#fffbe9;
+    color:#1a1300;
+    border:1px solid var(--gold);
+    border-radius:8px;
+    padding:8px 12px;
+    font-family:var(--sans);
+    font-size:13.5px;
+    max-width:260px;
+    box-shadow:0 10px 24px rgba(0,0,0,0.4);
+    display:none;
+    direction:rtl;text-align:right;
+    line-height:1.5;
   }
-  .done-screen .emoji{ font-size: 40px; margin-bottom: 10px; }
-  .done-screen .big{
-    font-size: 21px;
-    font-weight:800;
-    margin-bottom: 8px;
+  #tooltip .en{
+    display:block;font-family:var(--mono);color:var(--gold-dim);
+    font-size:11.5px;margin-bottom:3px;direction:ltr;text-align:left;
   }
-  .done-screen p{ color: var(--muted); margin: 0 0 22px; font-size:13.5px; line-height:1.5; }
-  button.restart{
-    font-family:'Manrope', sans-serif;
-    font-weight:700;
-    font-size: 14px;
-    color: var(--blue-dark);
-    background: var(--blue-soft);
-    border: none;
-    border-radius: 12px;
-    padding: 13px 22px;
-    cursor:pointer;
+  #tooltip::after{
+    content:"";position:absolute;bottom:-6px;right:16px;
+    width:12px;height:12px;background:#fffbe9;border-right:1px solid var(--gold);
+    border-bottom:1px solid var(--gold);transform:rotate(45deg);
   }
-  button.restart:active{ opacity: 0.85; }
 
-  .footnote{
-    text-align:center;
-    font-size: 11px;
-    color: var(--muted);
-    padding: 10px 20px 16px;
+  /* completion */
+  .done-wrap{text-align:center;padding:20px 6px;}
+  .done-wrap .big{font-size:44px;margin-bottom:6px;}
+  .done-wrap h2{margin:6px 0 6px;font-size:20px;}
+  .done-wrap p{color:var(--muted);font-size:14px;margin-bottom:20px;}
+
+  @media (max-width:480px){
+    .content-block{font-size:14px;padding:14px;}
+    .card{padding:20px 16px;}
   }
 </style>
 </head>
 <body>
 
-<div class="app">
-  <header>
-    <div class="brand"><span class="dot"></span>Review Deck</div>
-    <div class="counter" id="counter">01 / 13</div>
-  </header>
-
-  <main>
-    <div id="cardBody" style="display:flex; flex-direction:column; flex:1;"></div>
-    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="footnote">shuffled fresh every visit · Innovation University — Databases</div>
-  </main>
-
-  <footer class="actions" id="controls">
-    <span class="hint" id="hint">read it — then try to answer before you move on</span>
-    <div class="btn-row">
-      <button class="back" id="backBtn">← Back</button>
-      <button class="next" id="nextBtn">Next →</button>
+<div class="wrap">
+  <div class="titlebar">
+    <div class="chip">SQL</div>
+    <div>
+      <h1>اختبار قواعد البيانات — Views &amp; Joins</h1>
+      <p>اضغط على أي كلمة إنجليزية لعرض معناها بالعربي</p>
     </div>
-  </footer>
+  </div>
+
+  <div class="progress-row">
+    <span id="progressText">سؤال 1 من 20</span>
+    <span id="progressPct">5%</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:5%"></div></div>
+
+  <div class="card" id="quizCard">
+    <div class="kicker"><span class="dot"></span> <span id="typeLabel">SQL QUERY</span></div>
+
+    <div class="prompt-label">السؤال:</div>
+    <div class="content-block" id="questionBlock"></div>
+
+    <div class="answer-wrap" id="answerWrap">
+      <div class="answer-tag">✓ الإجابة الصحيحة</div>
+      <div class="content-block answer" id="answerBlock"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn btn-ghost" id="prevBtn">◀ السابق</button>
+      <button class="btn btn-primary" id="nextBtn">إظهار الإجابة</button>
+    </div>
+  </div>
+
+  <div class="card" id="doneCard" style="display:none;">
+    <div class="done-wrap">
+      <div class="big">🎓</div>
+      <h2>انتهيت من كل الأسئلة!</h2>
+      <p>راجعت 20 سؤال عن الـ Views والـ Joins والمصطلحات الأساسية في قواعد البيانات.</p>
+      <button class="btn btn-primary" id="restartBtn" style="flex:none;">إعادة الاختبار من البداية</button>
+    </div>
+  </div>
+
+  <div class="hint">اضغط في أي مكان فاضي لإغلاق مربع الترجمة</div>
 </div>
+
+<div id="tooltip"></div>
 
 <script>
 const questions = [
   {
-    q_en: "Define the purpose of a JOIN operation in relational databases.",
-    q_ar: "عرّف الغرض من عملية الـ JOIN في قواعد البيانات العلائقية.",
-    a_en: "Combines rows from two or more tables using a related column, to retrieve connected data across tables.",
-    a_ar: "تدمج صفوف من جدولين أو أكثر عبر عمود مشترك، لاسترجاع البيانات المرتبطة بينها."
+    type:"SQL QUERY",
+    q:"Retrieve the birthdate and address of the employee whose name is 'John B. Smith'.",
+    a:"SELECT BDATE, ADDRESS\nFROM EMPLOYEE\nWHERE FNAME='John' AND MINIT='B' AND LNAME='Smith'"
   },
   {
-    q_en: "Define the difference between INNER JOIN and OUTER JOIN.",
-    q_ar: "وضّح الفرق بين INNER JOIN و OUTER JOIN.",
-    a_en: "INNER JOIN: only matching rows in both tables. OUTER JOIN: matching rows plus unmatched rows from one or both tables.",
-    a_ar: "INNER JOIN: الصفوف المتطابقة فقط. OUTER JOIN: المتطابقة + غير المتطابقة من جدول أو أكثر."
+    type:"SQL QUERY",
+    q:"Retrieve the name and address of all employees who work for the 'Research' department.",
+    a:"SELECT FNAME, LNAME, ADDRESS\nFROM EMPLOYEE, DEPARTMENT\nWHERE DNAME='Research' AND DNUMBER=DNO\n\nNote: DNUMBER = DNO is the link (relationship) between the two tables."
   },
   {
-    q_en: "Determine different types of JOINs in SQL.",
-    q_ar: "حدّد الأنواع المختلفة لعمليات الـ JOIN في SQL.",
-    a_en: "INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN.",
-    a_ar: "INNER JOIN، LEFT JOIN، RIGHT JOIN، FULL OUTER JOIN."
+    type:"SQL QUERY",
+    q:"Retrieve the project number, department number, last name, birth date, and address of all employees who manage departments that control projects located in Stafford.",
+    a:"SELECT PNUMBER, DNUM, LNAME, BDATE, ADDRESS\nFROM PROJECT, DEPARTMENT, EMPLOYEE\nWHERE DNUM=DNUMBER AND MGRSSN=SSN AND PLOCATION='Stafford'"
   },
   {
-    q_en: "What is a VIEW in SQL? Explain its main objectives.",
-    q_ar: "ما هو الـ VIEW في SQL؟ اشرح أهدافه الرئيسية.",
-    a_en: "A virtual table built from a query result — stores no data itself, just displays it live each time it's queried.",
-    a_ar: "جدول افتراضي ناتج عن استعلام — لا يخزّن بيانات، بل يعرضها في كل مرة يُستعلَم فيها عنه."
+    type:"SQL QUERY",
+    q:"Retrieve the total number of employees in the company.",
+    a:"SELECT COUNT(*)\nFROM EMPLOYEE"
   },
   {
-    q_en: "Compare between ER and EER.",
-    q_ar: "قارن بين ER و EER.",
-    a_en: "ERD: entities, attributes, relationships — basic design. EER: adds specialization, generalization, inheritance, and categories — for complex databases.",
-    a_ar: "ERD: كيانات وسمات وعلاقات — تصميم أساسي. EER: يضيف التخصيص والتعميم والوراثة والفئات — لقواعد بيانات معقدة."
+    type:"SQL QUERY",
+    q:"Retrieve the number of employees in the 'Research' department.",
+    a:"SELECT COUNT(*)\nFROM EMPLOYEE, DEPARTMENT\nWHERE DNO=DNUMBER AND DNAME='Research'"
   },
   {
-    q_en: "What does 2NF eliminate? A) Transitive dependency B) Multi-valued dependency C) Partial dependency D) Join dependency",
-    q_ar: "ماذا تُزيل الصيغة الطبيعية الثانية (2NF)؟ A) الاعتمادية الانتقالية B) الاعتمادية متعددة القيم C) الاعتمادية الجزئية D) اعتمادية الـ Join",
-    a_en: "C) Partial dependency",
-    a_ar: "C) الاعتمادية الجزئية (Partial dependency)"
+    type:"SQL QUERY",
+    q:"Find the department number, the total number of employees, and the average salary for each department from the Employee table. Group the results by department number (DNO).",
+    a:"SELECT DNO, COUNT(*), AVG(SALARY)\nFROM EMPLOYEE\nGROUP BY DNO"
   },
   {
-    q_en: "Why is it useful to first do an ER design and then convert this into a relational schema?",
-    q_ar: "لماذا من المفيد عمل تصميم ER أولاً ثم تحويله إلى مخطط علائقي (relational schema)؟",
-    a_en: "ERD gives a clear conceptual view before implementation — it identifies entities, relationships, and constraints, improving accuracy and catching errors before converting to relational tables.",
-    a_ar: "ERD يعطي رؤية مفاهيمية واضحة قبل التنفيذ — يحدد الكيانات والعلاقات والقيود، ويقلل الأخطاء قبل تحويله إلى جداول علائقية."
+    type:"MULTIPLE CHOICE",
+    q:"What is the correct syntax to drop a view?\nA) DELETE VIEW view_name;\nB) DROP VIEW view_name;\nC) REMOVE VIEW view_name;\nD) TRUNCATE VIEW view_name;",
+    a:"B) DROP VIEW view_name;"
   },
   {
-    q_en: "Explain some of the main goals of normalization.",
-    q_ar: "اشرح بعض الأهداف الرئيسية للتطبيع (Normalization).",
-    a_en: "Breaks 'bad' relations into smaller ones based on FDs and keys, to minimize redundancy and insertion/deletion/update anomalies.",
-    a_ar: "تقسيم العلاقات السيئة إلى علاقات أصغر بناءً على FDs والمفاتيح، لتقليل التكرار ومشاكل الإدراج والحذف والتحديث."
+    type:"MULTIPLE CHOICE",
+    q:"What is the purpose of the SQL INNER JOIN keyword?\nA) To return unmatched records from the left table\nB) To return unmatched records from the right table\nC) To select only the records that have matching values in both tables",
+    a:"C) To select only the records that have matching values in both tables"
   },
   {
-    q_en: "State the differences between SQL and other conventional programming languages such as C#.",
-    q_ar: "اذكر الفروق بين SQL ولغات البرمجة التقليدية الأخرى مثل #C.",
-    a_en: "SQL: query language to manage and retrieve data. C#: general-purpose language to build applications.",
-    a_ar: "SQL: لغة استعلام لإدارة واسترجاع البيانات. #C: لغة برمجة عامة لبناء التطبيقات."
+    type:"MULTIPLE CHOICE",
+    q:"What happens when there is no match between tables in an INNER JOIN?\nA) The unmatched rows from both tables are returned\nB) The unmatched rows from the left table are returned\nC) The unmatched rows from the right table are returned\nD) No rows are returned for the unmatched entries",
+    a:"D) No rows are returned for the unmatched entries"
   },
   {
-    q_en: "Explain what is Nesting of Queries?",
-    q_ar: "اشرح ما المقصود بتداخل الاستعلامات (Nesting of Queries)؟",
-    a_en: "A query inside another query (subquery). The inner query runs first, and its result feeds the outer query — e.g. finding employees earning above the average salary.",
-    a_ar: "استعلام داخل استعلام آخر (subquery). الداخلي يُنفَّذ أولاً وتُستخدم نتيجته في الخارجي — مثال: موظفون براتب أعلى من المتوسط."
+    type:"MULTIPLE CHOICE",
+    q:"Given Employees as the left table and Departments as the right table, which join type would return all departments including those that have no employees assigned?\nA) INNER JOIN\nB) LEFT JOIN\nC) RIGHT JOIN\nD) FULL JOIN",
+    a:"C) RIGHT JOIN"
   },
   {
-    q_en: "What are the advantages of views?",
-    q_ar: "ما هي مزايا الـ Views؟",
-    a_en: "Reduce schema complexity, secure data at row/column level, and show aggregated data while hiding details. Modify: ALTER VIEW. Delete: DROP VIEW.",
-    a_ar: "تقلل تعقيد المخطط، تؤمّن البيانات على مستوى الصف والعمود، وتعرض بيانات مجمّعة مع إخفاء التفاصيل. تعديل: ALTER VIEW. حذف: DROP VIEW."
+    type:"MULTIPLE CHOICE",
+    q:"Which SQL command grants permissions to a user?\nA) ALLOW\nB) PERMIT\nC) GRANT\nD) ACCESS",
+    a:"C) GRANT"
   },
   {
-    q_en: "What is DCL (Data Control Language) in SQL? Determine the main types of DCL.",
-    q_ar: "ما هي لغة التحكم بالبيانات (DCL) في SQL؟ حدّد الأنواع الرئيسية لها.",
-    a_en: "Manages permissions on database objects. GRANT: gives access. REVOKE: removes access. DENY: blocks a specific action.",
-    a_ar: "تدير صلاحيات كائنات قاعدة البيانات. GRANT: منح. REVOKE: سحب. DENY: منع إجراء محدد."
+    type:"MULTIPLE CHOICE",
+    q:"What is the purpose of the REVOKE command?\nA) To create a user\nB) To remove user permissions\nC) To update data\nD) To delete a table",
+    a:"B) To remove user permissions"
   },
   {
-    q_en: "What is the main function of the UNION operator in SQL?",
-    q_ar: "ما هي الوظيفة الرئيسية لعامل UNION في SQL؟",
-    a_en: "Combines results of two or more SELECT statements into one set, removing duplicates automatically. Needs the same column count and compatible types.",
-    a_ar: "يدمج نتائج استعلامين SELECT أو أكثر في نتيجة واحدة، ويزيل التكرار تلقائيًا. يتطلب نفس عدد الأعمدة وأنواع متوافقة."
+    type:"ONE TERM",
+    q:"Give one term: A software package/system to facilitate the creation and maintenance of a computerized database.",
+    a:"Database Management System (DBMS)"
+  },
+  {
+    type:"ONE TERM",
+    q:"Which part of SQL is used to create and modify the structure of database objects such as tables and databases?",
+    a:"Data Definition Language (DDL)"
+  },
+  {
+    type:"ONE TERM",
+    q:"Give one term: Link between entities (corresponds to primary key–foreign key equivalencies in related tables).",
+    a:"Relationship"
+  },
+  {
+    type:"ONE WORD",
+    q:"Give one word: A SQL Server command used to explicitly prevent users or roles from accessing or performing actions on database objects, even if permissions were granted through another role.",
+    a:"DENY"
+  },
+  {
+    type:"ONE WORD",
+    q:"Give one word: A database design process that organizes data into specific table structures. It helps improve data integrity, prevent data anomalies, minimize data redundancy, and improve query performance.",
+    a:"Database Normalization"
+  },
+  {
+    type:"ONE WORD",
+    q:"Give one word: Used to represent complex relationships, real-world hierarchies, inheritance, and categories more clearly and accurately. It helps create better database designs.",
+    a:"Extended Entity-Relationship (EER) model"
+  },
+  {
+    type:"ONE WORD",
+    q:"Give one word: Used to control permission on database objects. Includes commands such as GRANT and REVOKE.",
+    a:"DCL — Data Control Language"
+  },
+  {
+    type:"ONE WORD",
+    q:"Give one word: This operator is used to combine the result-set of two or more SELECT statements. It automatically removes duplicate rows from the result set.",
+    a:"UNION operator"
   }
 ];
 
-// word-by-word glossary for English stages (lowercase, punctuation-stripped keys)
-const GLOSSARY = {
-  "a":"أداة تعريف نكرة","an":"أداة تعريف نكرة","the":"أداة تعريف معرفة","of":"مِن","in":"في","on":"على","to":"إلى",
-  "is":"هو/تكون","are":"تكون (جمع)","and":"و","or":"أو","between":"بين","from":"من","for":"لـ / من أجل",
-  "it":"هو (ضمير)","its":"الخاص به","they":"هم","them":"هم/إياهم","this":"هذا/هذه","that":"ذلك/التي",
-  "with":"مع","by":"بواسطة","as":"كـ / مثل","such":"مثل","into":"إلى داخل","than":"مِن (للمقارنة)",
-  "one":"واحد","two":"اثنان","more":"أكثر","or more":"أو أكثر","only":"فقط","all":"جميع","both":"كلاهما",
-  "each":"كل","other":"آخر/أخرى","another":"آخر","different":"مختلف","various":"متنوعة",
-  "based":"مبني","use":"استخدام","used":"يُستخدم","using":"باستخدام","useful":"مفيد",
-  "define":"عرّف / حدد","defining":"تعريف","explain":"اشرح","explicitly":"صراحةً",
-  "purpose":"الغرض","operation":"عملية","operator":"عامل / مُشغِّل",
-  "combine":"دمج","combines":"يدمج","merge":"دمج / يدمج",
-  "row":"صف","rows":"صفوف","column":"عمود","columns":"أعمدة",
-  "table":"جدول","tables":"جداول","view":"عرض / فيو (View)","views":"عروض (Views)",
-  "database":"قاعدة بيانات","databases":"قواعد بيانات","schema":"مخطط قاعدة البيانات","schemas":"مخططات",
-  "data":"بيانات","record":"سجل","records":"سجلات","result":"نتيجة","results":"نتائج",
-  "query":"استعلام","queries":"استعلامات","queried":"تم الاستعلام عنه","nesting":"تداخل","subquery":"استعلام فرعي",
-  "retrieve":"استرجاع","retrieved":"مسترجَع","return":"إرجاع","returns":"يُرجع",
-  "match":"تطابق","matching":"متطابق","non-matching":"غير متطابق",
-  "related":"مرتبط","relation":"علاقة","relations":"علاقات","relationship":"علاقة","relationships":"علاقات","relational":"علائقي",
-  "type":"نوع","types":"أنواع","difference":"فرق","differences":"فروق","compare":"قارن","determine":"حدّد","state":"اذكر",
-  "inner":"داخلي","outer":"خارجي","left":"يسار","right":"يمين","full":"كامل",
-  "entity":"كيان","entities":"كيانات","attribute":"سمة","attributes":"سمات",
-  "model":"نموذج","design":"تصميم","simpler":"أبسط","basic":"أساسي","advanced":"متقدم",
-  "additional":"إضافي","concepts":"مفاهيم","complex":"معقد","components":"مكونات",
-  "specialization":"التخصيص","generalization":"التعميم","inheritance":"الوراثة","categories":"فئات",
-  "create":"إنشاء","created":"تم إنشاؤه","convert":"تحويل","converted":"تم تحويله",
-  "provides":"يوفر","clear":"واضح","conceptual":"مفاهيمي","view (noun)":"رؤية",
-  "before":"قبل","after":"بعد","implementation":"تنفيذ","identify":"تحديد","constraints":"قيود",
-  "organized":"منظم","way":"طريقة","improving":"تحسين","accuracy":"دقة","reducing":"تقليل",
-  "redundancy":"تكرار زائد","helping":"يساعد","detect":"اكتشاف","errors":"أخطاء","early":"مبكرًا",
-  "systematically":"بشكل منهجي","making":"يجعل","easier":"أسهل","efficient":"فعّال / كفء",
-  "does":"يفعل / يقوم بـ","eliminate":"يزيل / يستبعد","eliminates":"يزيل",
-  "transitive":"انتقالية","dependency":"اعتمادية","multi-valued":"متعددة القيم","partial":"جزئية","join dependency":"اعتمادية الربط",
-  "normalization":"التطبيع","process":"عملية","decomposing":"تفكيك","unsatisfactory":"غير مُرضٍ","bad":"سيئ",
-  "breaking":"تقسيم / كسر","smaller":"أصغر","analyzing":"تحليل","given":"مُعطى","primary":"أساسي / رئيسي",
-  "keys":"مفاتيح","key":"مفتاح","minimize":"تقليل","insertion":"إدراج","deletion":"حذف","update":"تحديث","anomalies":"شذوذ / مشكلات",
-  "goals":"أهداف","main":"رئيسي","objectives":"أهداف","virtual":"افتراضي","permanently":"بشكل دائم",
-  "normal":"عادي","instead":"بدلاً من ذلك","displays":"يعرض","whenever":"كلما / في كل مرة",
-  "language":"لغة","languages":"لغات","conventional":"تقليدية","programming":"برمجة","general":"عام","purpose (adj)":"الغرض",
-  "develop":"تطوير","software":"برمجيات","applications":"تطبيقات","manage":"إدارة","manages":"يدير",
-  "also":"أيضًا","called":"يُسمى","placing":"وضع","inside":"داخل","executes":"يُنفَّذ","first (adv)":"أولاً",
-  "commonly":"عادةً","conditions":"شروط","example":"مثال","finding":"إيجاد","employees":"موظفون",
-  "earn":"يكسب / يتقاضى","salary":"راتب","higher":"أعلى","average":"متوسط","company":"شركة",
-  "advantages":"مزايا","reduce":"تقليل","complexity":"تعقيد","act":"يعمل","mechanism":"آلية",
-  "level":"مستوى","security":"أمان","present":"يعرض / يقدم","aggregated":"مجمّعة","while":"بينما","hiding":"إخفاء","detailed":"تفصيلية",
-  "modify":"تعديل","drop":"حذف","alter":"تعديل","permissions":"صلاحيات","user":"مستخدم","users":"مستخدمون",
-  "granting":"منح","removing":"إزالة","privileges":"امتيازات","objects":"كائنات","grant":"منح","revoke":"سحب / إزالة","deny":"رفض / منع",
-  "prevents":"يمنع","performing":"تنفيذ","specific":"محدد","actions":"إجراءات",
-  "function":"وظيفة","union":"اتحاد","combines2":"يدمج","statements":"جمل / عبارات","single":"واحد / مفرد",
-  "automatically":"تلقائيًا","duplicate":"مكرر","number":"عدد","compatible":"متوافق","types2":"أنواع",
-  "exist":"موجود","depending":"اعتمادًا على","because":"لأن","stored":"مُخزَّن","store":"تخزين",
-  "not":"لا / ليس","like":"مثل","interpret":"يفسّر"
+const dict = {
+  "retrieve":"يسترجع / يستعلم عن",
+  "birthdate":"تاريخ الميلاد",
+  "address":"العنوان",
+  "employee":"موظف",
+  "employees":"موظفون",
+  "whose":"الذي / التي (اسمه)",
+  "name":"اسم",
+  "department":"قسم",
+  "research":"أبحاث (اسم القسم هنا)",
+  "select":"أمر SQL لاختيار / عرض بيانات",
+  "from":"من (تحديد الجدول)",
+  "where":"حيث (شرط الاستعلام)",
+  "and":"و",
+  "count":"عدّ / حساب عدد الصفوف",
+  "avg":"المتوسط الحسابي",
+  "average":"المتوسط",
+  "salary":"الراتب",
+  "group":"تجميع",
+  "by":"حسب / بواسطة",
+  "join":"ربط جدولين معاً",
+  "inner":"داخلي",
+  "left":"يسار",
+  "right":"يمين",
+  "full":"كامل",
+  "drop":"حذف (كائن كامل مثل جدول أو عرض)",
+  "view":"عرض (View - استعلام محفوظ)",
+  "views":"عروض",
+  "create":"إنشاء",
+  "table":"جدول",
+  "tables":"جداول",
+  "grant":"منح صلاحية",
+  "revoke":"سحب / إلغاء صلاحية",
+  "deny":"رفض / منع صلاحية",
+  "permission":"صلاحية",
+  "permissions":"صلاحيات",
+  "user":"مستخدم",
+  "users":"مستخدمون",
+  "database":"قاعدة بيانات",
+  "management":"إدارة",
+  "system":"نظام",
+  "data":"بيانات",
+  "definition":"تعريف",
+  "language":"لغة",
+  "control":"تحكم",
+  "relationship":"علاقة",
+  "entities":"كيانات",
+  "entity":"كيان",
+  "primary":"أساسي (مفتاح أساسي)",
+  "key":"مفتاح",
+  "foreign":"خارجي (مفتاح خارجي)",
+  "composite":"مركّب",
+  "normalization":"التسوية / تطبيع قاعدة البيانات",
+  "integrity":"سلامة البيانات",
+  "anomalies":"تشوهات / أخطاء في البيانات",
+  "redundancy":"تكرار البيانات",
+  "query":"استعلام",
+  "performance":"أداء",
+  "complex":"معقّد",
+  "hierarchies":"تسلسلات هرمية",
+  "inheritance":"وراثة",
+  "categories":"فئات",
+  "clarity":"وضوح",
+  "organization":"تنظيم",
+  "representation":"تمثيل",
+  "structures":"هياكل",
+  "operator":"عملية / مُعامل",
+  "combine":"يدمج / يجمع",
+  "result":"نتيجة",
+  "duplicate":"مكرر",
+  "duplicates":"مكررات",
+  "rows":"صفوف",
+  "matching":"متطابقة",
+  "values":"قيم",
+  "unmatched":"غير متطابقة",
+  "records":"سجلات",
+  "manage":"يدير",
+  "manages":"يدير",
+  "project":"مشروع",
+  "number":"رقم",
+  "located":"تقع / موجودة في",
+  "purpose":"الغرض / الهدف",
+  "syntax":"صيغة الأمر (بناء الجملة)",
+  "correct":"صحيح",
+  "delete":"حذف (صفوف من جدول)",
+  "remove":"إزالة",
+  "truncate":"تفريغ الجدول بالكامل",
+  "returns":"يُرجع / يُعيد",
+  "included":"متضمّن",
+  "including":"بما في ذلك",
+  "those":"أولئك / التي",
+  "assigned":"مُسند / مخصص لها",
+  "software":"برنامج / برمجية",
+  "package":"حزمة برمجية",
+  "facilitate":"تسهيل",
+  "creation":"إنشاء",
+  "maintenance":"صيانة",
+  "computerized":"محوسبة",
+  "give":"أعطِ / اذكر",
+  "term":"مصطلح",
+  "word":"كلمة",
+  "link":"رابط / صلة",
+  "corresponds":"يتوافق مع / يقابل",
+  "equivalencies":"تكافؤات",
+  "related":"مرتبطة",
+  "explicitly":"صراحةً / بشكل واضح",
+  "prevent":"يمنع",
+  "accessing":"الوصول إلى",
+  "performing":"تنفيذ",
+  "actions":"إجراءات",
+  "objects":"كائنات (كائنات قاعدة البيانات)",
+  "even":"حتى",
+  "granted":"مُمنوحة",
+  "role":"دور / مجموعة صلاحيات",
+  "roles":"أدوار",
+  "process":"عملية",
+  "organizes":"ينظّم",
+  "specific":"محدد",
+  "improve":"يُحسّن",
+  "improves":"يُحسّن",
+  "minimize":"يُقلّل",
+  "represent":"يمثّل",
+  "clearly":"بوضوح",
+  "accurately":"بدقة",
+  "better":"أفضل",
+  "designs":"تصاميم",
+  "includes":"يتضمّن",
+  "commands":"أوامر",
+  "mainly":"بشكل رئيسي",
+  "deal":"يتعامل مع",
+  "rights":"حقوق",
+  "other":"أخرى",
+  "controls":"ضوابط / يتحكم في",
+  "access":"وصول",
+  "statements":"جمل / عبارات استعلام",
+  "automatically":"تلقائياً",
+  "removes":"يزيل",
+  "set":"مجموعة",
+  "total":"إجمالي",
+  "company":"الشركة",
+  "find":"أوجد",
+  "results":"نتائج",
+  "each":"كل",
+  "type":"نوع",
+  "types":"أنواع",
+  "text":"نص",
+  "column":"عمود",
+  "columns":"أعمدة",
+  "row":"صف",
+  "unique":"فريد",
+  "identify":"يُعرَّف / يُحدَّد",
+  "identified":"مُعرَّف بواسطة"
 };
 
-// stages: 0 = question EN, 1 = question AR, 2 = answer EN, 3 = answer AR
-const STAGE_META = [
-  { tab: "EN Q", label: "Question", rtl:false, isAnswer:false, green:false, tappable:true },
-  { tab: "AR Q", label: "الترجمة",  rtl:true,  isAnswer:false, green:false, tappable:false },
-  { tab: "EN A", label: "Answer",   rtl:false, isAnswer:true,  green:true,  tappable:true },
-  { tab: "AR A", label: "الإجابة",  rtl:true,  isAnswer:true,  green:true,  tappable:false }
-];
+let idx = 0;
+let answerShown = false;
 
-function shuffle(arr){
-  const a = arr.slice();
-  for(let i = a.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function lookupWord(raw){
-  const clean = raw.toLowerCase().replace(/[.,;:!?()"'#]/g, '').trim();
-  if(!clean) return null;
-  if(GLOSSARY[clean]) return GLOSSARY[clean];
-  // try singular form (strip trailing s)
-  if(clean.endsWith('s') && GLOSSARY[clean.slice(0,-1)]) return GLOSSARY[clean.slice(0,-1)];
-  return "لا توجد ترجمة لهذه الكلمة بعد";
-}
-
-function tokenizeToHtml(text){
-  return text.split(/(\s+)/).map(chunk => {
-    if(/^\s+$/.test(chunk) || chunk === '') return chunk;
-    const safe = chunk.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    return `<span class="word" data-word="${chunk.replace(/"/g,'&quot;')}">${safe}</span>`;
-  }).join('');
-}
-
-let order = shuffle(questions.map((_, i) => i));
-let qPos = 0;
-let stage = 0;
-
-const cardBody = document.getElementById('cardBody');
-const controls = document.getElementById('controls');
-const counter = document.getElementById('counter');
-const progressFill = document.getElementById('progressFill');
-const hint = document.getElementById('hint');
+const questionBlock = document.getElementById('questionBlock');
+const answerBlock = document.getElementById('answerBlock');
+const answerWrap = document.getElementById('answerWrap');
 const nextBtn = document.getElementById('nextBtn');
-const backBtn = document.getElementById('backBtn');
+const prevBtn = document.getElementById('prevBtn');
+const progressText = document.getElementById('progressText');
+const progressPct = document.getElementById('progressPct');
+const progressFill = document.getElementById('progressFill');
+const typeLabel = document.getElementById('typeLabel');
+const quizCard = document.getElementById('quizCard');
+const doneCard = document.getElementById('doneCard');
+const tooltip = document.getElementById('tooltip');
 
-function closePopup(){
-  const existing = document.querySelector('.word-popup');
-  if(existing) existing.remove();
-  document.querySelectorAll('.word.tapped').forEach(w => w.classList.remove('tapped'));
+function wordify(str){
+  return str.split('\n').map(line=>{
+    return line.replace(/[A-Za-z][A-Za-z\-]{1,}/g, (m)=>{
+      return '<span class="word" data-word="'+m+'">'+m+'</span>';
+    });
+  }).join('<br>');
 }
 
 function render(){
-  if(qPos >= order.length){
-    renderDone();
-    return;
-  }
-
-  const qIndex = order[qPos];
-  const q = questions[qIndex];
-  const meta = STAGE_META[stage];
-
-  counter.textContent = `${String(qPos+1).padStart(2,'0')} / ${order.length}`;
-
-  const totalSteps = order.length * 4;
-  const doneSteps = qPos * 4 + stage;
-  progressFill.style.width = ((doneSteps / totalSteps) * 100) + '%';
-
-  let text;
-  if(stage === 0) text = q.q_en;
-  else if(stage === 1) text = q.q_ar;
-  else if(stage === 2) text = q.a_en;
-  else text = q.a_ar;
-
-  const tabsHtml = STAGE_META.map((m, i) => {
-    const active = i === stage ? 'active' + (m.green ? ' green' : '') : '';
-    return `<div class="tab ${active}">${m.tab}</div>`;
-  }).join('');
-
-  const contentHtml = meta.tappable ? tokenizeToHtml(text) : text;
-  const tapHintHtml = meta.tappable ? `<span class="tap-hint">اضغط على كلمة للترجمة</span>` : '';
-
-  cardBody.innerHTML = `
-    <div class="tabs">${tabsHtml}</div>
-    <div class="id-tag">Question ${qIndex+1} of 13</div>
-    <div class="label-row">
-      <div class="label ${meta.isAnswer ? 'answer':''}">${meta.label}</div>
-      ${tapHintHtml}
-    </div>
-    <div class="card">
-      <div class="content fade-in ${meta.rtl ? 'rtl' : ''} ${meta.isAnswer ? 'answer-text' : ''}" id="contentEl">${contentHtml}</div>
-    </div>
-  `;
-
-  const hints = [
-    "read it — then try to answer before you move on",
-    "شوف الترجمة كويس",
-    "check your answer against this",
-    "قارن إجابتك بالحل"
-  ];
-  hint.textContent = hints[stage];
-
-  const lastEverything = (qPos === order.length - 1 && stage === 3);
-  nextBtn.textContent = lastEverything ? "Finish ✓" : "Next →";
-
-  backBtn.disabled = (qPos === 0 && stage === 0);
-
-  if(meta.tappable){
-    const contentEl = document.getElementById('contentEl');
-    contentEl.querySelectorAll('.word').forEach(span => {
-      span.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const alreadyTapped = span.classList.contains('tapped');
-        closePopup();
-        if(alreadyTapped) return;
-        span.classList.add('tapped');
-        const translation = lookupWord(span.dataset.word);
-        const popup = document.createElement('div');
-        popup.className = 'word-popup';
-        popup.innerHTML = `<span class="en">${span.dataset.word.replace(/[.,;:!?()"'#]/g,'')}</span><span class="ar">${translation}</span>`;
-        document.querySelector('.card').appendChild(popup);
-      });
-    });
-  }
+  const item = questions[idx];
+  typeLabel.textContent = item.type;
+  questionBlock.innerHTML = wordify(item.q);
+  answerBlock.innerHTML = wordify(item.a);
+  answerWrap.classList.remove('show');
+  answerShown = false;
+  nextBtn.textContent = "إظهار الإجابة";
+  prevBtn.disabled = (idx === 0);
+  progressText.textContent = "سؤال " + (idx+1) + " من " + questions.length;
+  const pct = Math.round(((idx+1)/questions.length)*100);
+  progressPct.textContent = pct + "%";
+  progressFill.style.width = pct + "%";
+  hideTooltip();
 }
 
-document.addEventListener('click', closePopup);
+function showDone(){
+  quizCard.style.display = 'none';
+  doneCard.style.display = 'block';
+  hideTooltip();
+}
 
-function renderDone(){
-  progressFill.style.width = '100%';
-  counter.textContent = `13 / 13`;
-  cardBody.innerHTML = `
-    <div class="card">
-      <div class="done-screen fade-in">
-        <div class="emoji">✅</div>
-        <div class="big">All 13 questions reviewed</div>
-        <p>Run it again and the order shuffles fresh — good for testing recall, not memorizing order.</p>
-        <button class="restart" id="restartBtn">↻ Restart, new shuffle</button>
-      </div>
-    </div>
-  `;
-  controls.style.display = 'none';
-  document.getElementById('restartBtn').addEventListener('click', () => {
-    order = shuffle(questions.map((_, i) => i));
-    qPos = 0;
-    stage = 0;
-    controls.style.display = 'block';
+nextBtn.addEventListener('click', ()=>{
+  if(!answerShown){
+    answerWrap.classList.add('show');
+    answerShown = true;
+    nextBtn.textContent = (idx < questions.length-1) ? "السؤال التالي ◀" : "إنهاء الاختبار";
+  } else {
+    if(idx < questions.length-1){
+      idx++;
+      render();
+    } else {
+      showDone();
+    }
+  }
+});
+
+prevBtn.addEventListener('click', ()=>{
+  if(idx > 0){
+    idx--;
     render();
-  });
+  }
+});
+
+document.getElementById('restartBtn').addEventListener('click', ()=>{
+  idx = 0;
+  doneCard.style.display = 'none';
+  quizCard.style.display = 'block';
+  render();
+});
+
+document.addEventListener('click', (e)=>{
+  const wordEl = e.target.closest('.word');
+  if(wordEl){
+    document.querySelectorAll('.word.active').forEach(w=>w.classList.remove('active'));
+    wordEl.classList.add('active');
+    const raw = wordEl.getAttribute('data-word');
+    const key = raw.toLowerCase();
+    const meaning = dict[key] || "لا توجد ترجمة متاحة لهذه الكلمة";
+    tooltip.innerHTML = '<span class="en">'+raw+'</span>' + meaning;
+    const rect = wordEl.getBoundingClientRect();
+    tooltip.style.display = 'block';
+    const ttRect = tooltip.getBoundingClientRect();
+    let left = rect.left + (rect.width/2) - (ttRect.width/2);
+    left = Math.max(10, Math.min(left, window.innerWidth - ttRect.width - 10));
+    let top = rect.top - ttRect.height - 12;
+    if(top < 8){ top = rect.bottom + 12; }
+    tooltip.style.left = left + "px";
+    tooltip.style.top = top + "px";
+    e.stopPropagation();
+  } else if(!e.target.closest('#tooltip')){
+    hideTooltip();
+  }
+});
+
+function hideTooltip(){
+  tooltip.style.display = 'none';
+  document.querySelectorAll('.word.active').forEach(w=>w.classList.remove('active'));
 }
-
-nextBtn.addEventListener('click', () => {
-  closePopup();
-  stage++;
-  if(stage > 3){
-    stage = 0;
-    qPos++;
-  }
-  render();
-});
-
-backBtn.addEventListener('click', () => {
-  if(qPos === 0 && stage === 0) return;
-  closePopup();
-  stage--;
-  if(stage < 0){
-    stage = 3;
-    qPos--;
-  }
-  render();
-});
 
 render();
 </script>
-
 </body>
 </html>
